@@ -1,15 +1,20 @@
 package org.example;
 
+import java.nio.file.Path;
+import java.nio.file.*;
+//import java.nio.file.FileAlreadyExistsException;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class CLI {
   private static boolean testingMode = false;
+  private static Path currentDirectory = Paths.get("").toAbsolutePath();
 
   public static void setTestingMode(boolean mystate){
       testingMode = mystate;
   }
     public static void ter() {
-        System.out.print("Sad to see you go.");
+        System.out.print("See you later ^_^.");
         if(!testingMode) {
             System.exit(0);
         }
@@ -42,18 +47,45 @@ public class CLI {
       System.out.print(description());
 
     }
+//    Shahd Elnassag
+
+
+    // Function Implementation of touch command
+    public static void createFile(String[]args){
+        try {
+            if(args.length < 2){
+              System.out.println("touch: missing file operand, Enter file name After command touch");
+          }
+            Path fileDirectory = currentDirectory.resolve(args[1]);
+
+            if (Files.exists(fileDirectory)) {
+              System.out.println("File Already Exists" + fileDirectory );
+          }
+          Files.createFile(fileDirectory);
+          System.out.println("File Created Successfully: "+fileDirectory);
+
+      } catch (Exception e) {
+        // Catch all other exceptions to prevent program termination
+        System.out.println("An unexpected error occurred: " + e.getMessage());
+    }
+    }
+    // Function Implementation of ls command
+    // Will added soon God Willing
 
 
     public static void runMyCli() {
-        Scanner command = new Scanner(System.in);
+        Scanner input = new Scanner(System.in);
         while (true) {
             System.out.print("commandLineIsBest> ");
-            String com = command.nextLine().trim();
-            if (com.equals("exit")) {
+            String command = input.nextLine().trim();
+            String [] commandArgs = command.split(" ");
+            if (commandArgs[0].equals("exit")) {
                 ter();
             }
-            else if(com.equals("help")){
+            else if(commandArgs[0].equals("help")){
               hel();
+            }else if(commandArgs[0].equals("touch")){
+               createFile(commandArgs);
             }
         }
 
