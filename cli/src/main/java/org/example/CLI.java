@@ -4,6 +4,9 @@ import java.nio.file.Path;
 import java.nio.file.*;
 //import java.nio.file.FileAlreadyExistsException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 
 public class CLI {
@@ -14,7 +17,7 @@ public class CLI {
       testingMode = mystate;
   }
     public static void ter() {
-        System.out.print("See you later ^_^.");
+        System.out.print("Sad to See you go,But See you later \uD83D\uDC4B ^_^.");
         if(!testingMode) {
             System.exit(0);
         }
@@ -47,9 +50,7 @@ public class CLI {
       System.out.print(description());
 
     }
-//    Shahd Elnassag
-
-
+//    Shahd Elnassag ^_^
     // Function Implementation of touch command
     public static void createFile(String[]args){
         try {
@@ -69,8 +70,50 @@ public class CLI {
         System.out.println("An unexpected error occurred: " + e.getMessage());
     }
     }
-    // Function Implementation of ls command
-    // Will added soon God Willing
+    // Function Implementation of ls , ls -a , la -r commands
+    public static void listFiles(String[]args){
+
+      try {
+          List<String> listOfFiles = new ArrayList<>();
+          boolean listHidden = false;
+          boolean reverse = false;
+
+          for (String arg : args) {
+              if (arg.equals("-a")){
+                  listHidden = true;
+              }if (arg.equals("-r")){
+                  reverse = true;
+              }
+          }
+
+          DirectoryStream<Path> directoryFiles = Files.newDirectoryStream(currentDirectory);
+
+          for (Path file : directoryFiles) {
+              listOfFiles.add(file.getFileName().toString());
+          }
+          // Handle ls -a
+          if (listHidden == false) {
+              listOfFiles.removeIf(fileName ->fileName.startsWith("."));
+          }
+
+          // Handel ls -r
+          if (reverse == true) {
+              Collections.reverse(listOfFiles);
+          }
+          System.out.println("Files and Directories in " + Paths.get("").toAbsolutePath().getFileName() + ": ");
+          for (String file : listOfFiles) {
+              Path path = currentDirectory.resolve(file);
+              if (Files.isDirectory(path)) {
+                  System.out.println(file + " /");
+              }else {
+                  System.out.println(file);
+              }
+          }
+
+      }catch (Exception e){
+          System.out.println("An unexpected error occurred: " + e.getMessage());
+      }
+    }
 
 
     public static void runMyCli() {
@@ -84,8 +127,18 @@ public class CLI {
             }
             else if(commandArgs[0].equals("help")){
               hel();
+              // Test touch command
             }else if(commandArgs[0].equals("touch")){
                createFile(commandArgs);
+               // Test ls, ls -a, ls -r commands
+            }else if(commandArgs[0].equals("ls")){
+                listFiles(commandArgs);
+            }
+
+            // Final Case be careful Do not Delete Me
+            else {
+                System.out.println("Command not found: " + commandArgs[0]);
+
             }
         }
 
