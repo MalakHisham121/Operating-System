@@ -5,17 +5,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ExampleTest {
 private final ByteArrayOutputStream Myoutput = new ByteArrayOutputStream();
-    private final PrintStream myout = System.out;
+private final PrintStream myout = System.out;
+
+
     @BeforeEach
     public void setUpStreams() {
+
         System.setOut(new PrintStream(Myoutput));
+
     }
 
     @BeforeAll
@@ -32,13 +39,14 @@ private final ByteArrayOutputStream Myoutput = new ByteArrayOutputStream();
     @Test
     void terminateMyProgramme(){
         CLI.ter();
-        assertTrue(Myoutput.toString().contains("Sad to see you go."));
+        assertTrue(Myoutput.toString().contains("Sad to See you go,But See you later \uD83D\uDC4B ^_^."));
 
     }
 
     @Test
     void helpToknowCommands(){
-        CLI.hel();
+        String[] ar = {"help"};
+        CLI.hel(ar);
         String expected = """
             System Commands:
             - pwd          : Displays the current directory path.
@@ -63,6 +71,32 @@ private final ByteArrayOutputStream Myoutput = new ByteArrayOutputStream();
 
         assertEquals(expected,Myoutput.toString());
 
+
+    }
+    @Test
+    public void testRedirect() throws IOException{
+        String text = "I am just testing\nI am Sure you are doing great! ";
+        String file = "malak.txt";
+        CLI.redirect(Paths.get(file),text);
+        String currentContent = Files.readString(Paths.get(file));
+        assertEquals(text,currentContent);
+        Files.delete((Paths.get(file)));
+
+    }
+
+    @Test
+    public void testAppend() throws IOException{
+        String file = "malak";
+        String beforeTest;
+        if(Files.exists(Paths.get(file))) {
+            beforeTest = Files.readString(Paths.get(file));
+        }
+        else beforeTest = "";
+        String text = "I am just testing\nI am Sure you are doing great! ";
+        CLI.appendOutput(Paths.get(file),text);
+        String currentContent = Files.readString(Paths.get(file));
+        assertEquals(beforeTest+text,currentContent);
+        Files.delete((Paths.get(file)));
 
     }
 
