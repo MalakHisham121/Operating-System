@@ -238,8 +238,7 @@ catch(Exception e){
                 PWD(commandArgs);
 
             } else if (commandArgs[0].equals("mkdir")) {
-
-               MKDir(commandArgs[1]);
+                MKDir(commandArgs[1]);
 
             }
             else if(commandArgs[0].equals("rmdir")){

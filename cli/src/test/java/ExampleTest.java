@@ -6,6 +6,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
+<<<<<<< HEAD
+import java.nio.file.Path;
+=======
+>>>>>>> b6905e8b7692a36f7e2c89da5ab70b8a8157d1a9
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -63,6 +67,33 @@ private final PrintStream myout = System.out;
 
         assertEquals(expected,Myoutput.toString());
 
+<<<<<<< HEAD
+    }}
+    // Shahd Elnassag Test Cases
+//    @Test
+//    void testTouchCommand()throws Exception{
+//        System.out.println("Testing Directory: "+ testDirectory);
+//        String [] args = {"touch","testFile"};
+//        CLI.createFile(args);
+//
+//        Path testPath = testDirectory.resolve(args[1]);
+//
+//        CLI.createFile(args);
+//        assertTrue(Files.exists(testPath) , "File Created");
+//        assertTrue(Myoutput.toString().contains("File Created Successfully: " + testPath));
+//
+//        // Another Test
+////        Myoutput.reset();
+////        CLI.createFile(args);
+////        assertTrue(Myoutput.toString().contains("File Already Exists" + testPath));
+//
+//
+//
+//
+//    }
+//
+//}
+=======
 
     }
     @Test
@@ -93,3 +124,4 @@ private final PrintStream myout = System.out;
     }
 
 }
+>>>>>>> b6905e8b7692a36f7e2c89da5ab70b8a8157d1a9
