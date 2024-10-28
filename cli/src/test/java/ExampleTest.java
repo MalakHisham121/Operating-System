@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,7 +35,7 @@ private final ByteArrayOutputStream Myoutput = new ByteArrayOutputStream();
     @Test
     void terminateMyProgramme(){
         CLI.ter();
-        assertTrue(Myoutput.toString().contains("Sad to see you go."));
+        assertTrue(Myoutput.toString().contains("Sad to See you go,But See you later \uD83D\uDC4B ^_^."));
 
     }
 
@@ -63,7 +66,28 @@ private final ByteArrayOutputStream Myoutput = new ByteArrayOutputStream();
 
         assertEquals(expected,Myoutput.toString());
 
-
-    }
-
-}
+    }}
+    // Shahd Elnassag Test Cases
+//    @Test
+//    void testTouchCommand()throws Exception{
+//        System.out.println("Testing Directory: "+ testDirectory);
+//        String [] args = {"touch","testFile"};
+//        CLI.createFile(args);
+//
+//        Path testPath = testDirectory.resolve(args[1]);
+//
+//        CLI.createFile(args);
+//        assertTrue(Files.exists(testPath) , "File Created");
+//        assertTrue(Myoutput.toString().contains("File Created Successfully: " + testPath));
+//
+//        // Another Test
+////        Myoutput.reset();
+////        CLI.createFile(args);
+////        assertTrue(Myoutput.toString().contains("File Already Exists" + testPath));
+//
+//
+//
+//
+//    }
+//
+//}

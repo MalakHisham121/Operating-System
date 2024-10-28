@@ -1,9 +1,8 @@
 package org.example;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.*;
-//import java.nio.file.FileAlreadyExistsException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.Scanner;
 
 public class CLI {
   private static boolean testingMode = false;
-  private static Path currentDirectory = Paths.get("").toAbsolutePath();
+  public static Path currentDirectory = Paths.get("").toAbsolutePath();
 
   public static void setTestingMode(boolean mystate){
       testingMode = mystate;
