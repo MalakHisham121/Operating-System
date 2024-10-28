@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -66,29 +67,30 @@ public class ExampleTest {
 
     }
     // Shahd Elnassag Test Cases
-//    @Test
-//    void testTouchCommand()throws Exception{
-//        System.out.println("Testing Directory: "+ testDirectory);
-//        String [] args = {"touch","testFile"};
-//        CLI.createFile(args);
-//
-//        Path testPath = testDirectory.resolve(args[1]);
-//
-//        CLI.createFile(args);
-//        assertTrue(Files.exists(testPath) , "File Created");
-//        assertTrue(Myoutput.toString().contains("File Created Successfully: " + testPath));
-//
-//        // Another Test
-////        Myoutput.reset();
-////        CLI.createFile(args);
-////        assertTrue(Myoutput.toString().contains("File Already Exists" + testPath));
-//
-//
-//
-//
-//    }
-//
-//}
+    @Test
+    void testTouchCommand()throws Exception{
+        System.setOut(new PrintStream(Myoutput));
+        String [] args = {"touch","testFile"};
+        Path testPath = Paths.get("").toAbsolutePath().resolve(args[1]);
+
+        Files.deleteIfExists(testPath);
+        CLI.createFile(args);
+
+        // Verify the file was created successfully
+        assertTrue(Files.exists(testPath));
+       assertTrue(Myoutput.toString().contains("File Created Successfully \uD83C\uDF89: \n" + testPath));
+
+
+        // Another Test  Verify it detects the file already exists
+        Myoutput.reset();
+        CLI.createFile(args);
+        assertTrue(Myoutput.toString().contains("File Already Exists ✨" + testPath));
+        Files.deleteIfExists(testPath);
+
+
+    }
+    // Test lsCommand will add soon God willing
+
 
 
     @Test

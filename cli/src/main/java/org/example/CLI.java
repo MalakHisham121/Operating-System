@@ -77,14 +77,14 @@ public class CLI {
             Path fileDirectory = currentDirectory.resolve(args[1]);
 
             if (Files.exists(fileDirectory)) {
-                System.out.println("File Already Exists" + fileDirectory);
+                System.out.println("File Already Exists ✨" + fileDirectory);
             }
             Files.createFile(fileDirectory);
-            System.out.println("File Created Successfully: " + fileDirectory);
+            System.out.println("File Created Successfully \uD83C\uDF89: \n" + fileDirectory);
 
         } catch (Exception e) {
             // Catch all other exceptions to prevent program termination
-            System.out.println("An unexpected error occurred: " + e.getMessage());
+            System.out.println("An unexpected error occurred \uD83D\uDE33: \n" + e.getMessage());
         }
     }
 
@@ -169,11 +169,7 @@ public class CLI {
         String currentDir = System.getProperty("user.dir");
         String directoryPath = currentDir + "\\"+ DirName;
         File Dir = new File(directoryPath);
-<<<<<<< HEAD
-        Dir.mkdir();
-=======
         Dir.mkdir() ;
->>>>>>> d91ec3fb3ee6351347d667c99f471ab39c271368
     }
     //============================================================
     public static void RMDir(String DirName)  {
@@ -190,33 +186,33 @@ public class CLI {
     //============================================================
     public  static void PWD(String []args)  {
         String currentDir = "Current directory is:"+ System.getProperty("user.dir") +"\n";
-try{
-    boolean rd = false,ap= false;
-    for(int i =0;i<args.length;i++){
-        if(args[i].equals(">")){
-           if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to redirect in");
-           else {
-               rd = true;
-               redirect(Paths.get(args[i + 1]), currentDir);
-           }
-        }
-        if(args[i].equals(">>")){
-            if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to append to");
-            else {
-                ap = true;
-                appendOutput(Paths.get(args[i + 1]), currentDir);
+        try{
+            boolean rd = false,ap= false;
+            for(int i =0;i<args.length;i++){
+                if(args[i].equals(">")){
+                    if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to redirect in");
+                    else {
+                        rd = true;
+                        redirect(Paths.get(args[i + 1]), currentDir);
+                    }
+                }
+                if(args[i].equals(">>")){
+                    if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to append to");
+                    else {
+                        ap = true;
+                        appendOutput(Paths.get(args[i + 1]), currentDir);
+                    }
+                }
+            }
+            // System.out.println(rd);
+            if(!ap&&!rd){
+
+                System.out.println(currentDir);
             }
         }
-    }
-   // System.out.println(rd);
-    if(!ap&&!rd){
-
-        System.out.println(currentDir);
-    }
-}
-catch(Exception e){
-    System.out.println( e.getMessage());
-}
+        catch(Exception e){
+            System.out.println( e.getMessage());
+        }
     }
 
 
@@ -280,7 +276,3 @@ catch(Exception e){
         runMyCli();
     }
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> d91ec3fb3ee6351347d667c99f471ab39c271368
