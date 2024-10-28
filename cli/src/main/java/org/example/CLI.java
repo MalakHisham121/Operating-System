@@ -169,6 +169,7 @@ public class CLI {
         String currentDir = System.getProperty("user.dir");
         String directoryPath = currentDir + "\\"+ DirName;
         File Dir = new File(directoryPath);
+        Dir.mkdir() ;
     }
     //============================================================
     public static void RMDir(String DirName)  {
@@ -183,10 +184,35 @@ public class CLI {
         }
     }
     //============================================================
-    public  static void PWD()  {
-        String currentDir = System.getProperty("user.dir");
+    public  static void PWD(String []args)  {
+        String currentDir = "Current directory is:"+ System.getProperty("user.dir") +"\n";
+try{
+    boolean rd = false,ap= false;
+    for(int i =0;i<args.length;i++){
+        if(args[i].equals(">")){
+           if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to redirect in");
+           else {
+               rd = true;
+               redirect(Paths.get(args[i + 1]), currentDir);
+           }
+        }
+        if(args[i].equals(">>")){
+            if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to append to");
+            else {
+                ap = true;
+                appendOutput(Paths.get(args[i + 1]), currentDir);
+            }
+        }
+    }
+   // System.out.println(rd);
+    if(!ap&&!rd){
 
-        System.out.println("current directory is :"+currentDir);
+        System.out.println(currentDir);
+    }
+}
+catch(Exception e){
+    System.out.println( e.getMessage());
+}
     }
 
 
@@ -209,10 +235,11 @@ public class CLI {
             } else if (commandArgs[0].equals("ls")) {
                 listFiles(commandArgs);
             } else if (commandArgs[0].equals("pwd")) {
-                PWD();
+                PWD(commandArgs);
 
             } else if (commandArgs[0].equals("mkdir")) {
-                MKDir(commandArgs[1]);
+
+               MKDir(commandArgs[1]);
 
             }
             else if(commandArgs[0].equals("rmdir")){
