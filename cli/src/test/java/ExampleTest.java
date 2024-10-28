@@ -87,6 +87,16 @@ public class ExampleTest {
         assertTrue(Myoutput.toString().contains("File Already Exists ✨" + testPath));
         Files.deleteIfExists(testPath);
 
+        // Another Test
+        Myoutput.reset();
+        String[] args1 = {"touch"};
+
+        // Call the method under test
+        CLI.createFile(args1);
+
+        // Assertions
+        assertTrue(Myoutput.toString().contains("missing file operand"));
+
 
     }
     // Test lsCommand will add soon God willing
