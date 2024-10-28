@@ -1,7 +1,5 @@
 import org.example.CLI;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -18,17 +16,11 @@ public class ExampleTest {
     private final PrintStream myout = System.out;
 
 
-    @BeforeEach
-    public void setUpStreams() {
 
-        System.setOut(new PrintStream(Myoutput));
-
-    }
-
-    @BeforeAll
-    public static void  TakeCareIamTesting(){
-        CLI.setTestingMode(true);
-    }
+//    @BeforeAll
+//    public static void  TakeCareIamTesting(){
+//        CLI.setTestingMode(true);
+//    }
 
     @AfterEach
     public void restoreStreams() {
@@ -73,6 +65,32 @@ public class ExampleTest {
 
 
     }
+    // Shahd Elnassag Test Cases
+//    @Test
+//    void testTouchCommand()throws Exception{
+//        System.out.println("Testing Directory: "+ testDirectory);
+//        String [] args = {"touch","testFile"};
+//        CLI.createFile(args);
+//
+//        Path testPath = testDirectory.resolve(args[1]);
+//
+//        CLI.createFile(args);
+//        assertTrue(Files.exists(testPath) , "File Created");
+//        assertTrue(Myoutput.toString().contains("File Created Successfully: " + testPath));
+//
+//        // Another Test
+////        Myoutput.reset();
+////        CLI.createFile(args);
+////        assertTrue(Myoutput.toString().contains("File Already Exists" + testPath));
+//
+//
+//
+//
+//    }
+//
+//}
+
+
     @Test
     public void testRedirect() throws IOException{
         String text = "I am just testing\nI am Sure you are doing great! ";
