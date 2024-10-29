@@ -1,5 +1,6 @@
 import org.example.CLI;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -15,7 +16,10 @@ public class ExampleTest {
 private final ByteArrayOutputStream Myoutput = new ByteArrayOutputStream();
 private final PrintStream myout = System.out;
 
-
+    @BeforeEach
+    public void setUpStreams() {
+        System.setOut(new PrintStream(Myoutput));
+    }
 
 //    @BeforeAll
 //    public static void  TakeCareIamTesting(){
