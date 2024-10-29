@@ -183,6 +183,16 @@ public class CLI {
         }
     }
     //============================================================
+    public void cd(String goingdirectory){
+        File Go =new File(goingdirectory);
+        if (Go.exists()&& Go.isDirectory()){
+            System.setProperty("user.dir",Go.getAbsolutePath());
+        }
+        else{
+            System.out.println("there is no such directory");
+        }
+    }
+     //============================================================
     public  static void PWD(String []args)  {
         String currentDir = "Current directory is:"+ System.getProperty("user.dir") +"\n";
         try{
