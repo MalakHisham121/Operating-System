@@ -77,14 +77,14 @@ public class CLI {
             Path fileDirectory = currentDirectory.resolve(args[1]);
 
             if (Files.exists(fileDirectory)) {
-                System.out.println("File Already Exists" + fileDirectory);
+                System.out.println("File Already Exists ✨" + fileDirectory);
             }
             Files.createFile(fileDirectory);
-            System.out.println("File Created Successfully: " + fileDirectory);
+            System.out.println("File Created Successfully \uD83C\uDF89: \n" + fileDirectory);
 
         } catch (Exception e) {
             // Catch all other exceptions to prevent program termination
-            System.out.println("An unexpected error occurred: " + e.getMessage());
+            System.out.println("An unexpected error occurred \uD83D\uDE33: \n" + e.getMessage());
         }
     }
 
@@ -121,37 +121,37 @@ public class CLI {
             }
             String output="";
 
-                output += "Files and Directories in " + Paths.get("").toAbsolutePath().getFileName() + ": ";
-                for (String file : listOfFiles) {
-                    Path path = currentDirectory.resolve(file);
-                    if (Files.isDirectory(path)) {
-                        output += file + "/";
-                    } else {
-                        output += file;
-                    }
-                    output += '\n';
+            output += "Files and Directories in " + Paths.get("").toAbsolutePath().getFileName() + ": ";
+            for (String file : listOfFiles) {
+                Path path = currentDirectory.resolve(file);
+                if (Files.isDirectory(path)) {
+                    output += file + "/";
+                } else {
+                    output += file;
                 }
-                boolean rdirect = false;
-                boolean appen = false;
-                for(int i =0;i<args.length;i++){
-                    if(args[i].equals(">"))
-                    {
-                        rdirect =true;
-                        if(i!= args.length-1)
+                output += '\n';
+            }
+            boolean rdirect = false;
+            boolean appen = false;
+            for(int i =0;i<args.length;i++){
+                if(args[i].equals(">"))
+                {
+                    rdirect =true;
+                    if(i!= args.length-1)
                         redirect(Paths.get(args[i+1]),output);
-                        else
-                            throw new RuntimeException("Please enter the file to redirect in");
+                    else
+                        throw new RuntimeException("Please enter the file to redirect in");
 
-                    }if(args[i].equals(">>"))
-                    {
-                        appen= true;
-                        if(i!= args.length-1)
+                }if(args[i].equals(">>"))
+                {
+                    appen= true;
+                    if(i!= args.length-1)
                         appendOutput(Paths.get(args[i+1]),output);
-                        else
-                            throw new RuntimeException("Please enter the file to redirect in");
+                    else
+                        throw new RuntimeException("Please enter the file to redirect in");
 
-                    }
                 }
+            }
             if(!appen&&!rdirect) {
                 System.out.print(output);
             }
@@ -161,7 +161,6 @@ public class CLI {
             System.out.println("An unexpected error occurred: " + e.getMessage());
         }
     }
-
 
 
     //============================================================
@@ -184,35 +183,52 @@ public class CLI {
         }
     }
     //============================================================
+    public void cd(String goingdirectory){
+        String currentDirectory = System.getProperty("user.dir");
+        File Go ;
+        switch (goingdirectory) {
+            case ".." -> Go = new File(currentDirectory).getParentFile();
+            case "~" -> Go= new File(System.getProperty("user.home"));// Change to home directory
+            case "\\" ->   Go = new File("\\");// Change to root directory
+            default -> Go = new File(goingdirectory); //Change to required directory
+        }
+        if (Go.exists()&& Go.isDirectory()){
+            System.setProperty("user.dir",Go.getAbsolutePath());
+        }
+        else{
+            System.out.println("there is no such directory");
+        }
+    }
+     //============================================================
     public  static void PWD(String []args)  {
         String currentDir = "Current directory is:"+ System.getProperty("user.dir") +"\n";
-try{
-    boolean rd = false,ap= false;
-    for(int i =0;i<args.length;i++){
-        if(args[i].equals(">")){
-           if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to redirect in");
-           else {
-               rd = true;
-               redirect(Paths.get(args[i + 1]), currentDir);
-           }
-        }
-        if(args[i].equals(">>")){
-            if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to append to");
-            else {
-                ap = true;
-                appendOutput(Paths.get(args[i + 1]), currentDir);
+        try{
+            boolean rd = false,ap= false;
+            for(int i =0;i<args.length;i++){
+                if(args[i].equals(">")){
+                    if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to redirect in");
+                    else {
+                        rd = true;
+                        redirect(Paths.get(args[i + 1]), currentDir);
+                    }
+                }
+                if(args[i].equals(">>")){
+                    if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to append to");
+                    else {
+                        ap = true;
+                        appendOutput(Paths.get(args[i + 1]), currentDir);
+                    }
+                }
+            }
+            // System.out.println(rd);
+            if(!ap&&!rd){
+
+                System.out.println(currentDir);
             }
         }
-    }
-   // System.out.println(rd);
-    if(!ap&&!rd){
-
-        System.out.println(currentDir);
-    }
-}
-catch(Exception e){
-    System.out.println( e.getMessage());
-}
+        catch(Exception e){
+            System.out.println( e.getMessage());
+        }
     }
 
 
@@ -255,25 +271,24 @@ catch(Exception e){
 
     }
 
-        public static void hel (String[]commandArgs){
-            if (1 < commandArgs.length) {
-                if (commandArgs[1].equals(">"))
-                    redirect(Paths.get(commandArgs[2]), description());
-                else {
-                    appendOutput(Paths.get(commandArgs[2]), description());
-                }
-            } else {
-                System.out.print(description());
-
+    public static void hel (String[]commandArgs){
+        if (1 < commandArgs.length) {
+            if (commandArgs[1].equals(">"))
+                redirect(Paths.get(commandArgs[2]), description());
+            else {
+                appendOutput(Paths.get(commandArgs[2]), description());
             }
+        } else {
+            System.out.print(description());
+
         }
+    }
 
 
 
 
 
     public static void main(String []args) {
-runMyCli();
+        runMyCli();
     }
 }
-
