@@ -13,6 +13,7 @@ public class CLI {
     public static void setTestingMode(boolean mystate) {
         testingMode = mystate;
     }
+
     // exit command
     public static void ter() {
         System.out.print("Sad to See you go,But See you later \uD83D\uDC4B ^_^.");
@@ -20,6 +21,7 @@ public class CLI {
             System.exit(0);
         }
     }
+
     // Malak Hisham
     public static void redirect(Path p, String text) {
         try {
@@ -31,7 +33,7 @@ public class CLI {
         }
     }
 
-    public static void appendOutput(Path p,String text) {
+    public static void appendOutput(Path p, String text) {
         try {
             Files.writeString(p, text, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
             System.out.println("Output appended to file Successfully :)");
@@ -58,15 +60,16 @@ public class CLI {
                 - >            : Redirects output to a file, overwriting its contents.
                 - >>           : Redirects output to a file, appending to its contents.
                 - |            : Pipes the output of one command as input to another.
-                            
+                
                 Internal Commands:
                 - exit         : Exits the CLI program.
                 - help         : Displays available commands and their descriptions.
                 """;
 
     }
-     // help command
-    public static void hel (String[]commandArgs){
+
+    // help command
+    public static void hel(String[] commandArgs) {
         if (1 < commandArgs.length) {
             if (commandArgs[1].equals(">"))
                 redirect(Paths.get(commandArgs[2]), description());
@@ -102,25 +105,6 @@ public class CLI {
     }
 
     // Function Implementation of ls , ls -a , la -r commands
-<<<<<<< HEAD
-=======
-    
-    public static void grep(String pattern, String text) {
-        // Compile the regex pattern
-        Pattern compiledPattern = Pattern.compile(pattern);
-
-        // Split the input text into lines
-        String[] lines = text.split("\n");
-
-        // Loop through each line and search for the pattern
-        for (String line : lines) {
-            Matcher matcher = compiledPattern.matcher(line);
-            if (matcher.find()) {
-                System.out.println(line);
-            }
-        }
-    }
->>>>>>> 5f6bb009644fe88194892b448ede83df77c1452b
     public static void listFiles(String[] args) {
 
         try {
@@ -151,7 +135,7 @@ public class CLI {
             if (reverse == true) {
                 Collections.reverse(listOfFiles);
             }
-            String output="";
+            String output = "";
 
             output += "Files and Directories in " + Paths.get("").toAbsolutePath().getFileName() + ": ";
             for (String file : listOfFiles) {
@@ -166,32 +150,31 @@ public class CLI {
             boolean rdirect = false;
             boolean appen = false;
             boolean pip = false;
-            for(int i =0;i<args.length;i++){
-                if(args[i].equals(">"))
-                {
-                    rdirect =true;
-                    if(i!= args.length-1)
-                        redirect(Paths.get(args[i+1]),output);
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].equals(">")) {
+                    rdirect = true;
+                    if (i != args.length - 1)
+                        redirect(Paths.get(args[i + 1]), output);
                     else
                         throw new RuntimeException("Please enter the file to redirect in");
 
-                }if(args[i].equals(">>"))
-                {
-                    appen= true;
-                    if(i!= args.length-1)
-                        appendOutput(Paths.get(args[i+1]),output);
+                }
+                if (args[i].equals(">>")) {
+                    appen = true;
+                    if (i != args.length - 1)
+                        appendOutput(Paths.get(args[i + 1]), output);
                     else
                         throw new RuntimeException("Please enter the file to redirect in");
 
                 }
                 if (args[i].equals("|")) {
                     pip = true;
-                  pipe(args,i+1,output);
-                    }
+                    pipe(args, i + 1, output);
                 }
+            }
 
 
-            if(!pip&& !appen&&!rdirect) {
+            if (!pip && !appen && !rdirect) {
                 System.out.print(output);
             }
 
@@ -217,7 +200,6 @@ public class CLI {
             }
         }
     }
-
     // pipe
 
     public static void head(String input, int numberOfLinesToShow) {
@@ -241,7 +223,7 @@ public class CLI {
             }
         }
     }
-    // Add this method to implement the 'mv' command functionality
+// Add this method to implement the 'mv' command functionality
     public static void mv(Path currentDirectory, String source, String destination) {
         Path sourcePath = currentDirectory.resolve(source);
         Path destinationPath = currentDirectory.resolve(destination);
@@ -264,7 +246,7 @@ public class CLI {
             System.out.println("mv: cannot move '" + source + "': " + e.getMessage());
         }
     }
-    // rm command
+// rm command
     public static void rm(Path currentDirectory, String[] files, boolean recursive) {
         for (String fileName : files) {
             Path filePath = Paths.get(fileName.trim());
@@ -296,7 +278,7 @@ public class CLI {
         }
     }
 
-    // cat command
+// cat command
     public static void cat(String[] args) {
         if (args.length < 2) {
             System.out.println("cat: missing file operand, Enter file names after command cat");
@@ -355,54 +337,27 @@ public class CLI {
 
 
 
-    //============================================================
-    // mkdir command
-    public static void MKDir(String DirName) {
-        String currentDir = System.getProperty("user.dir");
-        String directoryPath = currentDir + "\\"+ DirName;
-        File Dir = new File(directoryPath);
-        Dir.mkdir() ;
+//============================================================
+// mkdir command
+public static void MKDir(String DirName) {
+    String currentDir = System.getProperty("user.dir");
+    String directoryPath = currentDir + "\\"+ DirName;
+    File Dir = new File(directoryPath);
+    Dir.mkdir() ;
+}
+// rmdir command
+public static void RMDir(String DirName)  {
+    String currentDir = System.getProperty("user.dir");
+    String directoryPath = currentDir + "\\"+ DirName;
+    try{
+        Files.delete(Paths.get(directoryPath));
+        System.out.println("Directory deleted successfully");
     }
-    // rmdir command
-    public static void RMDir(String DirName)  {
-        String currentDir = System.getProperty("user.dir");
-        String directoryPath = currentDir + "\\"+ DirName;
-        try{
-            Files.delete(Paths.get(directoryPath));
-            System.out.println("Directory deleted successfully");
-        }
-        catch (Exception e){
-            System.out.println("Error"+e.getMessage());
-        }
+    catch (Exception e){
+        System.out.println("Error"+e.getMessage());
     }
-<<<<<<< HEAD
-    // cd command
-=======
-    public static void head(String input, int numberOfLinesToShow) {
-        String[] lines = input.split("\n");
-
-        for (int i = 0; i < Math.min(numberOfLinesToShow, lines.length); i++) {
-            System.out.println(lines[i]);
-        }
-
-  public static void pipe(String[] args,int pointer,String input){
-        for(int i = pointer;i<args.length;i++){
-
-            if(args[i].equals("grep")){
-                grep(args[i+1],input);
-            }
-            else if (args[i].equals("head")) {
-                // Call the head method with the input from the previous command
-                head(input,Integer.parseInt(args[i + 1]));
-                return; // Exit after executing the command
-            }
-        }
-    }
-
-    
-
-    //============================================================
->>>>>>> 5f6bb009644fe88194892b448ede83df77c1452b
+}
+//    cd command
     public static void cd(String goingdirectory){
         String currentDirectory2 = System.getProperty("user.dir");
         File Go ;
@@ -455,50 +410,50 @@ public class CLI {
     }
 
 
-     //=======================================================================================
-//    public static void sort(Path currentDirectory, String fileName) {
-//        Path filePath = currentDirectory.resolve(fileName);
-//        try {
-//            Files.lines(filePath)
-//                    .sorted()
-//                    .forEach(System.out::println);
-//        } catch (IOException e) {
-//            System.out.println("sort: cannot read file '" + fileName + "': " + e.getMessage());
-//        }
-//    }
-//===========================================================================================
-//    public static void grep(Path currentDirectory, String pattern, String fileName) {
-//        Path filePath = currentDirectory.resolve(fileName);
-//        try {
-//            Files.lines(filePath)
-//                    .filter(line -> line.contains(pattern))
-//                    .forEach(System.out::println);
-//        } catch (IOException e) {
-//            System.out.println("grep: cannot read file '" + fileName + "': " + e.getMessage());
-//        }
-//    }
-//==============================================================================================
-//    public static void unique(Path currentDirectory, String fileName) {
-//        Path filePath = currentDirectory.resolve(fileName);
-//        try {
-//            Set<String> uniqueLines = new LinkedHashSet<>(Files.readAllLines(filePath));
-//            uniqueLines.forEach(System.out::println);
-//        } catch (IOException e) {
-//            System.out.println("unique: cannot read file '" + fileName + "': " + e.getMessage());
-//        }
-//    }
-//==============================================================================================
-//     public static void grep(Path currentDirectory, String pattern, String fileName) {
-//         Path filePath = currentDirectory.resolve(fileName);
-//         try {
-//             Files.lines(filePath)
-//                     .filter(line -> line.contains(pattern))
-//                     .forEach(System.out::println);
-//         } catch (IOException e) {
-//             System.out.println("grep: cannot read file '" + fileName + "': " + e.getMessage());
-//         }
-//     }
-    //============================================================================================
+//    //=======================================================================================
+////    public static void sort(Path currentDirectory, String fileName) {
+////        Path filePath = currentDirectory.resolve(fileName);
+////        try {
+////            Files.lines(filePath)
+////                    .sorted()
+////                    .forEach(System.out::println);
+////        } catch (IOException e) {
+////            System.out.println("sort: cannot read file '" + fileName + "': " + e.getMessage());
+////        }
+////    }
+////===========================================================================================
+////    public static void grep(Path currentDirectory, String pattern, String fileName) {
+////        Path filePath = currentDirectory.resolve(fileName);
+////        try {
+////            Files.lines(filePath)
+////                    .filter(line -> line.contains(pattern))
+////                    .forEach(System.out::println);
+////        } catch (IOException e) {
+////            System.out.println("grep: cannot read file '" + fileName + "': " + e.getMessage());
+////        }
+////    }
+////==============================================================================================
+////    public static void unique(Path currentDirectory, String fileName) {
+////        Path filePath = currentDirectory.resolve(fileName);
+////        try {
+////            Set<String> uniqueLines = new LinkedHashSet<>(Files.readAllLines(filePath));
+////            uniqueLines.forEach(System.out::println);
+////        } catch (IOException e) {
+////            System.out.println("unique: cannot read file '" + fileName + "': " + e.getMessage());
+////        }
+////    }
+////==============================================================================================
+////     public static void grep(Path currentDirectory, String pattern, String fileName) {
+////         Path filePath = currentDirectory.resolve(fileName);
+////         try {
+////             Files.lines(filePath)
+////                     .filter(line -> line.contains(pattern))
+////                     .forEach(System.out::println);
+////         } catch (IOException e) {
+////             System.out.println("grep: cannot read file '" + fileName + "': " + e.getMessage());
+////         }
+////     }
+//    //============================================================================================
 
     public static void runMyCli() {
         Scanner input = new Scanner(System.in);
