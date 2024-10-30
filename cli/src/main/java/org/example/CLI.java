@@ -410,50 +410,7 @@ public static void RMDir(String DirName)  {
     }
 
 
-//    //=======================================================================================
-////    public static void sort(Path currentDirectory, String fileName) {
-////        Path filePath = currentDirectory.resolve(fileName);
-////        try {
-////            Files.lines(filePath)
-////                    .sorted()
-////                    .forEach(System.out::println);
-////        } catch (IOException e) {
-////            System.out.println("sort: cannot read file '" + fileName + "': " + e.getMessage());
-////        }
-////    }
-////===========================================================================================
-////    public static void grep(Path currentDirectory, String pattern, String fileName) {
-////        Path filePath = currentDirectory.resolve(fileName);
-////        try {
-////            Files.lines(filePath)
-////                    .filter(line -> line.contains(pattern))
-////                    .forEach(System.out::println);
-////        } catch (IOException e) {
-////            System.out.println("grep: cannot read file '" + fileName + "': " + e.getMessage());
-////        }
-////    }
-////==============================================================================================
-////    public static void unique(Path currentDirectory, String fileName) {
-////        Path filePath = currentDirectory.resolve(fileName);
-////        try {
-////            Set<String> uniqueLines = new LinkedHashSet<>(Files.readAllLines(filePath));
-////            uniqueLines.forEach(System.out::println);
-////        } catch (IOException e) {
-////            System.out.println("unique: cannot read file '" + fileName + "': " + e.getMessage());
-////        }
-////    }
-////==============================================================================================
-////     public static void grep(Path currentDirectory, String pattern, String fileName) {
-////         Path filePath = currentDirectory.resolve(fileName);
-////         try {
-////             Files.lines(filePath)
-////                     .filter(line -> line.contains(pattern))
-////                     .forEach(System.out::println);
-////         } catch (IOException e) {
-////             System.out.println("grep: cannot read file '" + fileName + "': " + e.getMessage());
-////         }
-////     }
-//    //============================================================================================
+//=======================================================================================
 
     public static void runMyCli() {
         Scanner input = new Scanner(System.in);
