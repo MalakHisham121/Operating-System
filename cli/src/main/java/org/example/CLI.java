@@ -6,7 +6,10 @@ import java.util.*;
 
 public class CLI {
     private static boolean testingMode = false;
-    private static Path currentDirectory = Paths.get("").toAbsolutePath();
+    public static Path currentDirectory = Paths.get("").toAbsolutePath();
+
+    public String currentDirectory2 = System.getProperty("user.dir");
+
 
     public static void setTestingMode(boolean mystate) {
         testingMode = mystate;

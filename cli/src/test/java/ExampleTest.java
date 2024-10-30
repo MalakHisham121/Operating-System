@@ -1,5 +1,7 @@
 import org.example.CLI;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -15,20 +17,43 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ExampleTest {
     private final ByteArrayOutputStream Myoutput = new ByteArrayOutputStream();
     private final PrintStream myout = System.out;
+    private Path testDir;
 
-//    @BeforeEach
-//    public void setUpStreams() {
-//        System.setOut(new PrintStream(Myoutput));
-//    }
-//
-//    @BeforeAll
-//    public static void  TakeCareIamTesting(){
-//        CLI.setTestingMode(true);
-//    }
+    @BeforeEach
+    public void setUpStreams() throws IOException {
+        testDir = Files.createTempDirectory("testDir");
+        System.setOut(new PrintStream(Myoutput));
+
+        // Samples File used in Testing LS
+        Files.createFile(testDir.resolve("nonHiddenTestFile.txt"));
+        Files.createFile(testDir.resolve(".hiddenTestFile.txt"));
+        Files.createDirectory(testDir.resolve("testDir1"));
+        CLI.currentDirectory = testDir;
+
+
+    }
+    @BeforeEach
+    public void restMyoutput() {
+        Myoutput.reset();
+    }
+
+    @BeforeAll
+    public static void  TakeCareIamTesting(){
+        CLI.setTestingMode(true);
+    }
 
     @AfterEach
     public void restoreStreams() {
         System.setOut(myout);
+    }
+
+    @AfterEach
+    public void tearDown() throws Exception {
+        // Clean up the temporary directory
+        for (Path path : Files.newDirectoryStream(testDir)) {
+            Files.delete(path);
+        }
+        Files.delete(testDir); // Delete the test directory
     }
 
 
@@ -70,11 +95,14 @@ public class ExampleTest {
 
     }
     // Shahd Elnassag Test Cases
+
     @Test
     void testTouchCommand()throws Exception{
         System.setOut(new PrintStream(Myoutput));
         String [] args = {"touch","testFile"};
-        Path testPath = Paths.get("").toAbsolutePath().resolve(args[1]);
+        Path testPath = testDir.resolve(args[1]);
+
+//        Path testPath = Paths.get("").toAbsolutePath().resolve(args[1]);
 
         Files.deleteIfExists(testPath);
         CLI.createFile(args);
@@ -100,9 +128,50 @@ public class ExampleTest {
         // Assertions
         assertTrue(Myoutput.toString().contains("missing file operand"));
 
+    }
+
+    // Test lsCommand will add soon God willing
+    @Test
+    public void TestLsCommand() {
+        System.setOut(new PrintStream(Myoutput));
+
+        // tett for ls
+        String[] args = {"ls"};
+        CLI.listFiles(args);
+
+        String expectedLsOutput = "Files and Directories in cli: "
+                + "nonHiddenTestFile.txt\n"
+                + "testDir1/\n";
+
+        assertEquals(expectedLsOutput.trim(), Myoutput.toString().trim(), "Output did not match expected value.");
+
+// test for ls -a
+        Myoutput.reset();
+
+        String[] args_a = {"ls", "-a"};
+        CLI.listFiles(args_a);
+
+        String expectedLs_a = "Files and Directories in cli: "
+                + ".hiddenTestFile.txt\n"
+                + "nonHiddenTestFile.txt\n"
+                + "testDir1/\n";
+
+        assertEquals(expectedLs_a.trim(), Myoutput.toString().trim(), "Output did not match expected value with -a.");
+
+// Test for la -r
+        Myoutput.reset();
+
+        String[] args_r = {"ls", "-r"};
+        CLI.listFiles(args_r);
+
+        String expectedLs_r = "Files and Directories in cli: "
+                + "testDir1/\n"
+                + "nonHiddenTestFile.txt\n" ;
+
+        assertEquals(expectedLs_r.trim(), Myoutput.toString().trim(), "Output did not match expected value with -r.");
 
     }
-    // Test lsCommand will add soon God willing
+
 
 
 
@@ -156,8 +225,11 @@ public class ExampleTest {
     // cd not added into commands yet
     public void Test3(){
         CLI myClass = new CLI();
-        CLI.cd("menna");
+        String DirName = "menna";
         File F = new File("menna");
+        F.mkdir();
+        CLI.cd(DirName);
+
         assertEquals(F.getAbsolutePath(),System.getProperty("user.dir"));
     }
 
