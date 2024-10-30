@@ -213,6 +213,7 @@ public class CLI {
         for (int i = 0; i < Math.min(numberOfLinesToShow, lines.length); i++) {
             System.out.println(lines[i]);
         }
+    }
 
   public static void pipe(String[] args,int pointer,String input){
         for(int i = pointer;i<args.length;i++){
