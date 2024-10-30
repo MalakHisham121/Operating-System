@@ -22,7 +22,7 @@ public class ExampleTest {
     @BeforeEach
     public void setUpStreams() throws IOException {
         testDir = Files.createTempDirectory("testDir");
-        System.setOut(new PrintStream(Myoutput));
+      //  System.setOut(new PrintStream(Myoutput));
 
         // Samples File used in Testing LS
         Files.createFile(testDir.resolve("nonHiddenTestFile.txt"));
@@ -59,6 +59,7 @@ public class ExampleTest {
 
     @Test
     void terminateMyProgramme(){
+        System.setOut(new PrintStream(Myoutput));
         CLI.ter();
         assertTrue(Myoutput.toString().contains("Sad to See you go,But See you later \uD83D\uDC4B ^_^."));
 
@@ -66,6 +67,7 @@ public class ExampleTest {
 
     @Test
     void helpToknowCommands(){
+        System.setOut(new PrintStream(Myoutput));
         String[] ar = {"help"};
         CLI.hel(ar);
         String expected = """

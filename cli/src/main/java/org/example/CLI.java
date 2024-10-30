@@ -92,20 +92,43 @@ public class CLI {
 
     // Function Implementation of ls , ls -a , la -r commands
     
-    public static void grep(String pattern, String text) {
+    public static void grep(String pattern, String text,String[]args,int pointer) {
         // Compile the regex pattern
         Pattern compiledPattern = Pattern.compile(pattern);
 
         // Split the input text into lines
         String[] lines = text.split("\n");
-
+String out = "";
         // Loop through each line and search for the pattern
         for (String line : lines) {
             Matcher matcher = compiledPattern.matcher(line);
             if (matcher.find()) {
-                System.out.println(line);
+                out+=line+"\n";
             }
         }
+        boolean red =false;
+        boolean app = false;
+        for(int i = pointer;i<args.length;i++){
+            try {
+                if (args[i].equals(">")) {
+                    red =true;
+                  redirect(Paths.get(args[i+1]),out);
+                  break;
+                }
+                if (args[i].equals(">>")) {
+                    app = true;
+appendOutput(Paths.get(args[i+1]),out);
+break;
+                }
+            }
+            catch (Exception e){
+                System.out.println("You don't specify the file to redirect in");
+            }
+        }
+        if(!red&&!app){
+            System.out.println(out);
+        }
+
     }
     public static void listFiles(String[] args) {
 
@@ -156,16 +179,20 @@ public class CLI {
                 if(args[i].equals(">"))
                 {
                     rdirect =true;
-                    if(i!= args.length-1)
-                        redirect(Paths.get(args[i+1]),output);
+                    if(i!= args.length-1) {
+                        redirect(Paths.get(args[i + 1]), output);
+                        break;
+                    }
                     else
                         throw new RuntimeException("Please enter the file to redirect in");
 
                 }if(args[i].equals(">>"))
                 {
                     appen= true;
-                    if(i!= args.length-1)
-                        appendOutput(Paths.get(args[i+1]),output);
+                    if(i!= args.length-1) {
+                        appendOutput(Paths.get(args[i + 1]), output);
+                        break;
+                    }
                     else
                         throw new RuntimeException("Please enter the file to redirect in");
 
@@ -173,6 +200,7 @@ public class CLI {
                 if (args[i].equals("|")) {
                     pip = true;
                   pipe(args,i+1,output);
+                  break;
                     }
                 }
 
@@ -207,11 +235,33 @@ public class CLI {
             System.out.println("Error"+e.getMessage());
         }
     }
-    public static void head(String input, int numberOfLinesToShow) {
+    public static void head(String input, int numberOfLinesToShow,String[]args,int pointer) {
         String[] lines = input.split("\n");
-
+      String out ="";
         for (int i = 0; i < Math.min(numberOfLinesToShow, lines.length); i++) {
-            System.out.println(lines[i]);
+            out+=lines[i]+"\n";
+        }
+        boolean red =false;
+        boolean app = false;
+        for(int i = pointer;i<args.length;i++){
+            try {
+                if (args[i].equals(">")) {
+                    red =true;
+                    redirect(Paths.get(args[i+1]),out);
+                    break;
+                }
+                if (args[i].equals(">>")) {
+                    app = true;
+                    appendOutput(Paths.get(args[i+1]),out);
+                    break;
+                }
+            }
+            catch (Exception e){
+                System.out.println("You don't specify the file to redirect in");
+            }
+        }
+        if(!red&&!app){
+            System.out.println(out);
         }
     }
 
@@ -219,11 +269,11 @@ public class CLI {
         for(int i = pointer;i<args.length;i++){
 
             if(args[i].equals("grep")){
-                grep(args[i+1],input);
+                grep(args[i+1],input,args,i+1);
             }
             else if (args[i].equals("head")) {
                 // Call the head method with the input from the previous command
-                head(input,Integer.parseInt(args[i + 1]));
+                head(input,Integer.parseInt(args[i + 1]),args,i+1);
                 return; // Exit after executing the command
             }
         }
