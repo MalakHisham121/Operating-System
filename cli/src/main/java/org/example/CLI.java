@@ -3,6 +3,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CLI {
     private static boolean testingMode = false;
@@ -89,6 +91,31 @@ public class CLI {
     }
 
     // Function Implementation of ls , ls -a , la -r commands
+    public static void grep(Path currentDirectory, String pattern, String fileName) {
+        Path filePath = currentDirectory.resolve(fileName);
+        try {
+            Files.lines(filePath)
+                    .filter(line -> line.contains(pattern))
+                    .forEach(System.out::println);
+        } catch (IOException e) {
+            System.out.println("grep: cannot read file '" + fileName + "': " + e.getMessage());
+        }
+    }
+    public static void grep(String pattern, String text) {
+        // Compile the regex pattern
+        Pattern compiledPattern = Pattern.compile(pattern);
+
+        // Split the input text into lines
+        String[] lines = text.split("\n");
+
+        // Loop through each line and search for the pattern
+        for (String line : lines) {
+            Matcher matcher = compiledPattern.matcher(line);
+            if (matcher.find()) {
+                System.out.println(line);
+            }
+        }
+    }
     public static void listFiles(String[] args) {
 
         try {
@@ -133,6 +160,7 @@ public class CLI {
             }
             boolean rdirect = false;
             boolean appen = false;
+            boolean pip = false;
             for(int i =0;i<args.length;i++){
                 if(args[i].equals(">"))
                 {
@@ -151,8 +179,14 @@ public class CLI {
                         throw new RuntimeException("Please enter the file to redirect in");
 
                 }
-            }
-            if(!appen&&!rdirect) {
+                if (args[i].equals("|")) {
+                    pip = true;
+                  pipe(args,i+1,output);
+                    }
+                }
+
+
+            if(!pip&& !appen&&!rdirect) {
                 System.out.print(output);
             }
 
@@ -180,6 +214,15 @@ public class CLI {
         }
         catch (Exception e){
             System.out.println("Error"+e.getMessage());
+        }
+    }
+
+    public static void pipe(String[] args,int pointer,String input){
+        for(int i = pointer;i<args.length;i++){
+
+            if(args[i].equals("grep")){
+grep(args[i+1],input);
+            }
         }
     }
 
@@ -299,24 +342,55 @@ public class CLI {
             System.out.println("cat: missing file operand, Enter file names after command cat");
             return;
         }
-
+        String output="";
+        boolean red = false;
+        boolean pip = false;
+        int ind_p =args.length;
+        int ind_red =args.length;
+        int ind_app =args.length;
+        boolean app = false;
         for (int i = 1; i < args.length; i++) {
+           if(!pip&&args[i].equals("|")){
+               pip =true;
+               ind_p = i+1;
+               break;
+           }
+           if(args[i].equals(">")){
+               red = true;
+               ind_red = i+1;
+               break;
+           }
+           if(args[i].equals(">>")) {
+              app = true;
+               ind_app = i+1;
+               break;
+           }
+            try {
             Path filePath = currentDirectory.resolve(args[i]);
 
-            try {
                 if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
                     List<String> lines = Files.readAllLines(filePath);
                     for (String line : lines) {
-                        System.out.println(line);
+                        output+=line +"\n";
                     }
-                    System.out.println(); // Print a newline between files for clarity
                 } else {
                     System.out.println("cat: cannot open '" + args[i] + "': No such file or directory");
                 }
+
             } catch (IOException e) {
                 System.out.println("cat: cannot read file '" + args[i] + "': " + e.getMessage());
             }
         }
+        if(pip){
+            pipe(args,ind_p,output);
+        } else if (red) {
+            redirect(Paths.get(args[ind_red]),output);
+        }
+        else if(app){
+            appendOutput(Paths.get(args[ind_app]),output);
+        }
+        else System.out.println(output);
+
     }
 
     //===============================================================================================
