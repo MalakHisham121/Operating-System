@@ -91,16 +91,7 @@ public class CLI {
     }
 
     // Function Implementation of ls , ls -a , la -r commands
-    public static void grep(Path currentDirectory, String pattern, String fileName) {
-        Path filePath = currentDirectory.resolve(fileName);
-        try {
-            Files.lines(filePath)
-                    .filter(line -> line.contains(pattern))
-                    .forEach(System.out::println);
-        } catch (IOException e) {
-            System.out.println("grep: cannot read file '" + fileName + "': " + e.getMessage());
-        }
-    }
+    
     public static void grep(String pattern, String text) {
         // Compile the regex pattern
         Pattern compiledPattern = Pattern.compile(pattern);
@@ -216,15 +207,28 @@ public class CLI {
             System.out.println("Error"+e.getMessage());
         }
     }
+    public static void head(String input, int numberOfLinesToShow) {
+        String[] lines = input.split("\n");
 
-    public static void pipe(String[] args,int pointer,String input){
+        for (int i = 0; i < Math.min(numberOfLinesToShow, lines.length); i++) {
+            System.out.println(lines[i]);
+        }
+
+  public static void pipe(String[] args,int pointer,String input){
         for(int i = pointer;i<args.length;i++){
 
             if(args[i].equals("grep")){
-grep(args[i+1],input);
+                grep(args[i+1],input);
+            }
+            else if (args[i].equals("head")) {
+                // Call the head method with the input from the previous command
+                head(input,Integer.parseInt(args[i + 1]));
+                return; // Exit after executing the command
             }
         }
     }
+
+    
 
     //============================================================
     public static void cd(String goingdirectory){
