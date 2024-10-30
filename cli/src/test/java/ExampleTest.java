@@ -156,7 +156,7 @@ public class ExampleTest {
     // cd not added into commands yet
     public void Test3(){
         CLI myClass = new CLI();
-        myClass.cd("menna");
+        CLI.cd("menna");
         File F = new File("menna");
         assertEquals(F.getAbsolutePath(),System.getProperty("user.dir"));
     }

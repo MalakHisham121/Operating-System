@@ -182,10 +182,10 @@ public class CLI {
 
     //============================================================
     public static void cd(String goingdirectory){
-        String currentDirectory = System.getProperty("user.dir");
+        String currentDirectory2 = System.getProperty("user.dir");
         File Go ;
         switch (goingdirectory) {
-            case ".." -> Go = new File(currentDirectory).getParentFile();
+            case ".." -> Go = new File(currentDirectory2).getParentFile();
             case "~" -> Go= new File(System.getProperty("user.home"));// Change to home directory
             case "\\" ->   Go = new File("\\");// Change to root directory
             default -> Go = new File(goingdirectory); //Change to required directory
@@ -193,6 +193,7 @@ public class CLI {
 
         }
         if (Go.exists()&& Go.isDirectory()){
+            currentDirectory = Path.of(Go.getAbsolutePath());
             System.setProperty("user.dir",Go.getAbsolutePath());
         }
         else{
