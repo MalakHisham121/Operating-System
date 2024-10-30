@@ -10,13 +10,10 @@ public class CLI {
     private static boolean testingMode = false;
     public static Path currentDirectory = Paths.get("").toAbsolutePath();
 
-    public String currentDirectory2 = System.getProperty("user.dir");
-
-
     public static void setTestingMode(boolean mystate) {
         testingMode = mystate;
     }
-
+    // exit command
     public static void ter() {
         System.out.print("Sad to See you go,But See you later \uD83D\uDC4B ^_^.");
         if (!testingMode) {
@@ -68,6 +65,20 @@ public class CLI {
                 """;
 
     }
+     // help command
+    public static void hel (String[]commandArgs){
+        if (1 < commandArgs.length) {
+            if (commandArgs[1].equals(">"))
+                redirect(Paths.get(commandArgs[2]), description());
+            else {
+                appendOutput(Paths.get(commandArgs[2]), description());
+            }
+        } else {
+            System.out.print(description());
+
+        }
+    }
+
 
     //    Shahd Elnassag ^_^
     // Function Implementation of touch command
@@ -91,31 +102,6 @@ public class CLI {
     }
 
     // Function Implementation of ls , ls -a , la -r commands
-    public static void grep(Path currentDirectory, String pattern, String fileName) {
-        Path filePath = currentDirectory.resolve(fileName);
-        try {
-            Files.lines(filePath)
-                    .filter(line -> line.contains(pattern))
-                    .forEach(System.out::println);
-        } catch (IOException e) {
-            System.out.println("grep: cannot read file '" + fileName + "': " + e.getMessage());
-        }
-    }
-    public static void grep(String pattern, String text) {
-        // Compile the regex pattern
-        Pattern compiledPattern = Pattern.compile(pattern);
-
-        // Split the input text into lines
-        String[] lines = text.split("\n");
-
-        // Loop through each line and search for the pattern
-        for (String line : lines) {
-            Matcher matcher = compiledPattern.matcher(line);
-            if (matcher.find()) {
-                System.out.println(line);
-            }
-        }
-    }
     public static void listFiles(String[] args) {
 
         try {
@@ -196,15 +182,169 @@ public class CLI {
         }
     }
 
+    //----------------------------------------------------------
+    public static void grep(String pattern, String text) {
+        // Compile the regex pattern
+        Pattern compiledPattern = Pattern.compile(pattern);
+
+        // Split the input text into lines
+        String[] lines = text.split("\n");
+
+        // Loop through each line and search for the pattern
+        for (String line : lines) {
+            Matcher matcher = compiledPattern.matcher(line);
+            if (matcher.find()) {
+                System.out.println(line);
+            }
+        }
+    }
+
+    // pipe
+
+    public static void head(String input, int numberOfLinesToShow) {
+        String[] lines = input.split("\n");
+
+        for (int i = 0; i < Math.min(numberOfLinesToShow, lines.length); i++) {
+            System.out.println(lines[i]);
+        }
+    }
+
+    public static void pipe(String[] args,int pointer,String input){
+        for(int i = pointer;i<args.length;i++){
+
+            if(args[i].equals("grep")){
+                grep(args[i+1],input);
+            }
+            else if (args[i].equals("head")) {
+                // Call the head method with the input from the previous command
+                head(input,Integer.parseInt(args[i + 1]));
+                return; // Exit after executing the command
+            }
+        }
+    }
+    // Add this method to implement the 'mv' command functionality
+    public static void mv(Path currentDirectory, String source, String destination) {
+        Path sourcePath = currentDirectory.resolve(source);
+        Path destinationPath = currentDirectory.resolve(destination);
+
+        try {
+            if (!Files.exists(sourcePath)) {
+                System.out.println("mv: cannot move '" + source + "': No such file or directory");
+                return;
+            }
+
+            if (Files.isDirectory(destinationPath)) {
+                Path newPath = destinationPath.resolve(sourcePath.getFileName());
+                Files.move(sourcePath, newPath);
+                System.out.println("Moved: " + source + " to " + newPath);
+            } else {
+                Files.move(sourcePath, destinationPath);
+                System.out.println("Moved: " + source + " to " + destination);
+            }
+        } catch (IOException e) {
+            System.out.println("mv: cannot move '" + source + "': " + e.getMessage());
+        }
+    }
+    // rm command
+    public static void rm(Path currentDirectory, String[] files, boolean recursive) {
+        for (String fileName : files) {
+            Path filePath = Paths.get(fileName.trim());
+            if (!filePath.isAbsolute()) {
+                filePath = currentDirectory.resolve(filePath);
+            }
+
+            System.out.println("Trying to remove: " + filePath);  // Debugging line
+
+            try {
+                if (Files.exists(filePath)) {
+                    if (Files.isDirectory(filePath)) {
+                        if (recursive) {
+                            RMDir(filePath.toString());
+                            System.out.println("Removed directory: " + filePath);
+                        } else {
+                            System.out.println("rm: cannot remove '" + fileName + "': Is a directory (use -r to remove recursively)");
+                        }
+                    } else {
+                        Files.deleteIfExists(filePath);
+                        System.out.println("Removed: " + filePath);
+                    }
+                } else {
+                    System.out.println("rm: cannot remove '" + fileName + "': No such file or directory");
+                }
+            } catch (IOException e) {
+                System.out.println("rm: cannot remove '" + fileName + "': " + e.getMessage());
+            }
+        }
+    }
+
+    // cat command
+    public static void cat(String[] args) {
+        if (args.length < 2) {
+            System.out.println("cat: missing file operand, Enter file names after command cat");
+            return;
+        }
+        String output="";
+        boolean red = false;
+        boolean pip = false;
+        int ind_p =args.length;
+        int ind_red =args.length;
+        int ind_app =args.length;
+        boolean app = false;
+        for (int i = 1; i < args.length; i++) {
+            if(!pip&&args[i].equals("|")){
+                pip =true;
+                ind_p = i+1;
+                break;
+            }
+            if(args[i].equals(">")){
+                red = true;
+                ind_red = i+1;
+                break;
+            }
+            if(args[i].equals(">>")) {
+                app = true;
+                ind_app = i+1;
+                break;
+            }
+            try {
+                Path filePath = currentDirectory.resolve(args[i]);
+
+                if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
+                    List<String> lines = Files.readAllLines(filePath);
+                    for (String line : lines) {
+                        output+=line +"\n";
+                    }
+                } else {
+                    System.out.println("cat: cannot open '" + args[i] + "': No such file or directory");
+                }
+
+            } catch (IOException e) {
+                System.out.println("cat: cannot read file '" + args[i] + "': " + e.getMessage());
+            }
+        }
+        if(pip){
+            pipe(args,ind_p,output);
+        } else if (red) {
+            redirect(Paths.get(args[ind_red]),output);
+        }
+        else if(app){
+            appendOutput(Paths.get(args[ind_app]),output);
+        }
+        else System.out.println(output);
+
+    }
+
+
 
     //============================================================
+    // mkdir command
     public static void MKDir(String DirName) {
         String currentDir = System.getProperty("user.dir");
         String directoryPath = currentDir + "\\"+ DirName;
         File Dir = new File(directoryPath);
         Dir.mkdir() ;
     }
-    //============================================================
+    // rmdir command
     public static void RMDir(String DirName)  {
         String currentDir = System.getProperty("user.dir");
         String directoryPath = currentDir + "\\"+ DirName;
@@ -216,17 +356,7 @@ public class CLI {
             System.out.println("Error"+e.getMessage());
         }
     }
-
-    public static void pipe(String[] args,int pointer,String input){
-        for(int i = pointer;i<args.length;i++){
-
-            if(args[i].equals("grep")){
-grep(args[i+1],input);
-            }
-        }
-    }
-
-    //============================================================
+    // cd command
     public static void cd(String goingdirectory){
         String currentDirectory2 = System.getProperty("user.dir");
         File Go ;
@@ -246,7 +376,39 @@ grep(args[i+1],input);
             System.out.println("there is no such directory");
         }
     }
-     //============================================================
+    // pwd command
+    public static void PWD(String []args)  {
+        String currentDir = "Current directory is:"+ System.getProperty("user.dir") +"\n";
+        try{
+            boolean rd = false,ap= false;
+            for(int i =0;i<args.length;i++){
+                if(args[i].equals(">")){
+                    if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to redirect in");
+                    else {
+                        rd = true;
+                        redirect(Paths.get(args[i + 1]), currentDir);
+                    }
+                }
+                if(args[i].equals(">>")){
+                    if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to append to");
+                    else {
+                        ap = true;
+                        appendOutput(Paths.get(args[i + 1]), currentDir);
+                    }
+                }
+            }
+            // System.out.println(rd);
+            if(!ap&&!rd){
+
+                System.out.print(currentDir);
+            }
+        }
+        catch(Exception e){
+            System.out.println( e.getMessage());
+        }
+    }
+
+
      //=======================================================================================
 //    public static void sort(Path currentDirectory, String fileName) {
 //        Path filePath = currentDirectory.resolve(fileName);
@@ -280,151 +442,17 @@ grep(args[i+1],input);
 //        }
 //    }
 //==============================================================================================
-     public static void rm(Path currentDirectory, String[] files, boolean recursive) {
-         for (String fileName : files) {
-             Path filePath = Paths.get(fileName.trim());
-             if (!filePath.isAbsolute()) {
-                 filePath = currentDirectory.resolve(filePath);
-             }
-
-             System.out.println("Trying to remove: " + filePath);  // Debugging line
-
-             try {
-                 if (Files.exists(filePath)) {
-                     if (Files.isDirectory(filePath)) {
-                         if (recursive) {
-                             RMDir(filePath.toString());
-                             System.out.println("Removed directory: " + filePath);
-                         } else {
-                             System.out.println("rm: cannot remove '" + fileName + "': Is a directory (use -r to remove recursively)");
-                         }
-                     } else {
-                         Files.deleteIfExists(filePath);
-                         System.out.println("Removed: " + filePath);
-                     }
-                 } else {
-                     System.out.println("rm: cannot remove '" + fileName + "': No such file or directory");
-                 }
-             } catch (IOException e) {
-                 System.out.println("rm: cannot remove '" + fileName + "': " + e.getMessage());
-             }
-         }
-     }
-
-    //=================================================================================
-// Add this method to implement the 'mv' command functionality
-    public static void mv(Path currentDirectory, String source, String destination) {
-        Path sourcePath = currentDirectory.resolve(source);
-        Path destinationPath = currentDirectory.resolve(destination);
-
-        try {
-            if (!Files.exists(sourcePath)) {
-                System.out.println("mv: cannot move '" + source + "': No such file or directory");
-                return;
-            }
-
-            if (Files.isDirectory(destinationPath)) {
-                Path newPath = destinationPath.resolve(sourcePath.getFileName());
-                Files.move(sourcePath, newPath);
-                System.out.println("Moved: " + source + " to " + newPath);
-            } else {
-                Files.move(sourcePath, destinationPath);
-                System.out.println("Moved: " + source + " to " + destination);
-            }
-        } catch (IOException e) {
-            System.out.println("mv: cannot move '" + source + "': " + e.getMessage());
-        }
-    }
-
-    //=================================================================================================
-    public static void cat(String[] args) {
-        if (args.length < 2) {
-            System.out.println("cat: missing file operand, Enter file names after command cat");
-            return;
-        }
-        String output="";
-        boolean red = false;
-        boolean pip = false;
-        int ind_p =args.length;
-        int ind_red =args.length;
-        int ind_app =args.length;
-        boolean app = false;
-        for (int i = 1; i < args.length; i++) {
-           if(!pip&&args[i].equals("|")){
-               pip =true;
-               ind_p = i+1;
-               break;
-           }
-           if(args[i].equals(">")){
-               red = true;
-               ind_red = i+1;
-               break;
-           }
-           if(args[i].equals(">>")) {
-              app = true;
-               ind_app = i+1;
-               break;
-           }
-            try {
-            Path filePath = currentDirectory.resolve(args[i]);
-
-                if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
-                    List<String> lines = Files.readAllLines(filePath);
-                    for (String line : lines) {
-                        output+=line +"\n";
-                    }
-                } else {
-                    System.out.println("cat: cannot open '" + args[i] + "': No such file or directory");
-                }
-
-            } catch (IOException e) {
-                System.out.println("cat: cannot read file '" + args[i] + "': " + e.getMessage());
-            }
-        }
-        if(pip){
-            pipe(args,ind_p,output);
-        } else if (red) {
-            redirect(Paths.get(args[ind_red]),output);
-        }
-        else if(app){
-            appendOutput(Paths.get(args[ind_app]),output);
-        }
-        else System.out.println(output);
-
-    }
-
-    //===============================================================================================
-    public static void PWD(String []args)  {
-        String currentDir = "Current directory is:"+ System.getProperty("user.dir") +"\n";
-        try{
-            boolean rd = false,ap= false;
-            for(int i =0;i<args.length;i++){
-                if(args[i].equals(">")){
-                    if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to redirect in");
-                    else {
-                        rd = true;
-                        redirect(Paths.get(args[i + 1]), currentDir);
-                    }
-                }
-                if(args[i].equals(">>")){
-                    if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to append to");
-                    else {
-                        ap = true;
-                        appendOutput(Paths.get(args[i + 1]), currentDir);
-                    }
-                }
-            }
-            // System.out.println(rd);
-            if(!ap&&!rd){
-
-                System.out.print(currentDir);
-            }
-        }
-        catch(Exception e){
-            System.out.println( e.getMessage());
-        }
-    }
-
+//     public static void grep(Path currentDirectory, String pattern, String fileName) {
+//         Path filePath = currentDirectory.resolve(fileName);
+//         try {
+//             Files.lines(filePath)
+//                     .filter(line -> line.contains(pattern))
+//                     .forEach(System.out::println);
+//         } catch (IOException e) {
+//             System.out.println("grep: cannot read file '" + fileName + "': " + e.getMessage());
+//         }
+//     }
+    //============================================================================================
 
     public static void runMyCli() {
         Scanner input = new Scanner(System.in);
@@ -499,22 +527,6 @@ grep(args[i+1],input);
         }
 
     }
-
-    public static void hel (String[]commandArgs){
-        if (1 < commandArgs.length) {
-            if (commandArgs[1].equals(">"))
-                redirect(Paths.get(commandArgs[2]), description());
-            else {
-                appendOutput(Paths.get(commandArgs[2]), description());
-            }
-        } else {
-            System.out.print(description());
-
-        }
-    }
-
-
-
 
 
     public static void main(String []args) {

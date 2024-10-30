@@ -171,7 +171,11 @@ public class ExampleTest {
         assertEquals(expectedLs_r.trim(), Myoutput.toString().trim(), "Output did not match expected value with -r.");
 
     }
+// Test cat Command
 
+    public void testCatCommand() {
+        System.setOut(new PrintStream(Myoutput));
+    }
 
 
 
