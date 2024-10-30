@@ -3,21 +3,24 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ExampleTest {
     private final ByteArrayOutputStream Myoutput = new ByteArrayOutputStream();
     private final PrintStream myout = System.out;
 
-
-
+//    @BeforeEach
+//    public void setUpStreams() {
+//        System.setOut(new PrintStream(Myoutput));
+//    }
+//
 //    @BeforeAll
 //    public static void  TakeCareIamTesting(){
 //        CLI.setTestingMode(true);
@@ -128,6 +131,42 @@ public class ExampleTest {
         assertEquals(beforeTest+text,currentContent);
         Files.delete((Paths.get(file)));
 
+    }
+
+
+    @Test //this is testcase For MKdir()
+    public void Test1(){
+        CLI myClass = new CLI();
+        myClass.MKDir("menna");
+        File F = new File("menna");
+        assertTrue(F.exists());
+    }
+
+    @Test //this is testcase For RMdir()
+    public void Test2(){
+        CLI myClass = new CLI();
+        File F = new File("menna");
+        assertTrue(F.exists());
+        myClass.RMDir("menna");
+        assertFalse(F.exists());
+
+    }
+
+    @Test //this is testcase For cd()
+    // cd not added into commands yet
+    public void Test3(){
+        CLI myClass = new CLI();
+        CLI.cd("menna");
+        File F = new File("menna");
+        assertEquals(F.getAbsolutePath(),System.getProperty("user.dir"));
+    }
+
+    @Test
+    void Test4(){ // this is testcase for ped()
+        CLI myClass = new CLI();
+        String[] li = {"pwd"};
+        CLI.PWD(li);
+        assertEquals("Current directory is:"+System.getProperty("user.dir")+"\n",Myoutput.toString());
     }
 
 }
