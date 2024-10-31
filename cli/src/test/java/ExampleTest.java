@@ -409,5 +409,35 @@ String[] gg ={"touch","nonHiddenTestFile.txt"};
         assertTrue(Myoutput.toString().contains("Removed: " + testFile));
     }
 
+    @Test
+    void testRemoveDirectoryRecursively() throws IOException {
+        Path testrmDir = Paths.get(System.getProperty("user.dir")).resolve("habiba");
+        Files.createDirectory(testrmDir);
+
+        Path subDir1 = testrmDir.resolve("subDir1");
+        Path subDir2 = testrmDir.resolve("subDir2");
+        Files.createDirectory(subDir1);
+        Files.createDirectory(subDir2);
+
+        Path file1 = testrmDir.resolve("file1.txt");
+        Path file2 = subDir1.resolve("file2.txt");
+        Path file3 = subDir2.resolve("file3.txt");
+        Files.createFile(file1);
+        Files.createFile(file2);
+        Files.createFile(file3);
+
+        String[] dirsToRemove = {"habiba"};
+        CLI.rm(Paths.get(System.getProperty("user.dir")), dirsToRemove, true);
+
+        assertFalse(Files.exists(testrmDir),"Remove testrmDir");
+        assertFalse(Files.exists(subDir1),"Remove subDir1");
+        assertFalse(Files.exists(subDir2),"Remove subDir2");
+        assertFalse(Files.exists(file1),"Remove file1");
+        assertFalse(Files.exists(file2),"Remove file2");
+        assertFalse(Files.exists(file3),"Remove file3");
+
+        assertTrue(Myoutput.toString().contains("Removed directory: " + testrmDir));
+    }
+
 
 }

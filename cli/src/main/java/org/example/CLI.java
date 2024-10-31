@@ -252,6 +252,27 @@ public class CLI {
     }
 
 //==============================================================================================
+private static void deleteDirectory(Path directory) throws IOException {
+    // Check if the provided path exists and is a directory
+    if (Files.exists(directory)) {
+        Files.list(directory).forEach(path -> {
+            try {
+                // Check if the path is a file or directory
+                if (Files.isDirectory(path)) {
+                    // Recursively delete the directory
+                    deleteDirectory(path);
+                } else {
+                    // Delete the file right away
+                    Files.delete(path);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        // Finally, delete the empty directory itself
+        Files.delete(directory);
+    }
+}
 public static void rm(Path currentDirectory, String[] files, boolean recursive) {
     for (String fileName : files) {
         Path filePath = Paths.get(fileName.trim());
@@ -265,7 +286,7 @@ public static void rm(Path currentDirectory, String[] files, boolean recursive) 
             if (Files.exists(filePath)) {
                 if (Files.isDirectory(filePath)) {
                     if (recursive) {
-                        RMDir(filePath.toString());
+                        deleteDirectory(filePath);
                         System.out.println("Removed directory: " + filePath);
                     } else {
                         System.out.println("rm: cannot remove '" + fileName + "': Is a directory (use -r to remove recursively)");
