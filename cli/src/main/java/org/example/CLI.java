@@ -252,36 +252,36 @@ public class CLI {
     }
 
 //==============================================================================================
-     public static void rm(Path currentDirectory, String[] files, boolean recursive) {
-         for (String fileName : files) {
-             Path filePath = Paths.get(fileName.trim());
-             if (!filePath.isAbsolute()) {
-                 filePath = currentDirectory.resolve(filePath);
-             }
+public static void rm(Path currentDirectory, String[] files, boolean recursive) {
+    for (String fileName : files) {
+        Path filePath = Paths.get(fileName.trim());
+        if (!filePath.isAbsolute()) {
+            filePath = currentDirectory.resolve(filePath);
+        }
 
-             System.out.println("Trying to remove: " + filePath);  // Debugging line
+        //System.out.println("Trying to remove: " + filePath);  // Debugging line
 
-             try {
-                 if (Files.exists(filePath)) {
-                     if (Files.isDirectory(filePath)) {
-                         if (recursive) {
-                             RMDir(filePath.toString());
-                             System.out.println("Removed directory: " + filePath);
-                         } else {
-                             System.out.println("rm: cannot remove '" + fileName + "': Is a directory (use -r to remove recursively)");
-                         }
-                     } else {
-                         Files.deleteIfExists(filePath);
-                         System.out.println("Removed: " + filePath);
-                     }
-                 } else {
-                     System.out.println("rm: cannot remove '" + fileName + "': No such file or directory");
-                 }
-             } catch (IOException e) {
-                 System.out.println("rm: cannot remove '" + fileName + "': " + e.getMessage());
-             }
-         }
-     }
+        try {
+            if (Files.exists(filePath)) {
+                if (Files.isDirectory(filePath)) {
+                    if (recursive) {
+                        RMDir(filePath.toString());
+                        System.out.println("Removed directory: " + filePath);
+                    } else {
+                        System.out.println("rm: cannot remove '" + fileName + "': Is a directory (use -r to remove recursively)");
+                    }
+                } else {
+                    Files.deleteIfExists(filePath);
+                    System.out.println("Removed: " + filePath);
+                }
+            } else {
+                System.out.println("rm: cannot remove '" + fileName + "': No such file or directory");
+            }
+        } catch (IOException e) {
+            System.out.println("rm: cannot remove '" + fileName + "': " + e.getMessage());
+        }
+    }
+}
 
 // Add this method to implement the 'mv' command functionality
     public static void mv(Path currentDirectory, String source, String destination) {

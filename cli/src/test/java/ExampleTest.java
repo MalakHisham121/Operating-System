@@ -356,4 +356,58 @@ String[] gg ={"touch","nonHiddenTestFile.txt"};
 
     }
 
+
+    // cat
+    @Test
+    void Test5() {
+        CLI myCLI = new CLI();
+        ByteArrayOutputStream myOutput = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(myOutput));
+
+        String[] args = {"cat", "habiba.txt"};
+
+        CLI.cat(args);
+
+        System.out.println("Actual Output: " + myOutput.toString().trim());
+
+        String expectedOutput = "habiba mohamed ahmed";
+
+        System.out.println("Actual Output: " + myOutput.toString().trim());
+
+        System.setOut(System.out);
+    }
+    @Test
+    void Test6() {
+        CLI myCLI = new CLI();
+        ByteArrayOutputStream myOutput = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(myOutput));
+
+        String[] args = {"cat", "C:\\Users\\Dell\\Downloads\\Operating-System-main (3)\\Operating-System-main\\cli\\src\\test\\java\\habiba.txt"};
+
+        CLI.cat(args);
+
+        String actualOutput = myOutput.toString().trim();
+        System.out.println("Actual Output: " + actualOutput);
+
+        String expectedOutput = "gggggggggggggggg'\n'hhhhhhhhhhhhhhhh'\n'zzzzzzzzzzzzzzzz";
+
+        System.out.println("Actual Output: " + myOutput.toString().trim());
+
+        System.setOut(System.out);
+    }
+
+    @Test // rm
+    void testRemoveSingleFile() throws IOException {
+        Path test = Paths.get(System.getProperty("user.dir"));
+        Path testFile = test.resolve("habiba.txt");
+        Files.createFile(testFile);
+
+        String[] filesToRemove = {"habiba.txt"};
+        CLI.rm(test, filesToRemove, false);
+
+        assertFalse(Files.exists(testFile));
+        assertTrue(Myoutput.toString().contains("Removed: " + testFile));
+    }
+
+
 }
