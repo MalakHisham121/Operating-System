@@ -125,7 +125,7 @@ public class CLI {
             }
             String output="";
 
-            output += "Files and Directories in " + Paths.get("").toAbsolutePath().getFileName() + ": ";
+
             for (String file : listOfFiles) {
                 Path path = currentDirectory.resolve(file);
                 if (Files.isDirectory(path)) {
@@ -527,10 +527,26 @@ public class CLI {
 
     public static void hel (String[]commandArgs){
         if (1 < commandArgs.length) {
-            if (commandArgs[1].equals(">"))
-                redirect(Paths.get(commandArgs[2]), description());
-            else {
-                appendOutput(Paths.get(commandArgs[2]), description());
+
+            for(int i = 1;i<commandArgs.length;i++) {
+                try {
+
+
+                    if (commandArgs[i].equals(">")) {
+                        redirect(Paths.get(commandArgs[2]), description());
+                        break;
+                    }
+                    if (commandArgs[i].equals(">>")) {
+                        appendOutput(Paths.get(commandArgs[2]), description());
+                        break;
+                    }
+                    if(commandArgs[i].equals("|")){
+                        pipe(commandArgs,i+1,description());
+                    }
+                }
+                catch (Exception e){
+                    System.out.println("command is not completed");
+                }
             }
         } else {
             System.out.print(description());

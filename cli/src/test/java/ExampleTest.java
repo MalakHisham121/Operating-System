@@ -20,7 +20,6 @@ public class ExampleTest {
     private Path testDir;
     private Path sourceFile , existFile , MVDir;
 
-
     @BeforeEach
     public void setUpStreams() throws IOException {
         testDir = Files.createTempDirectory("testDir");
@@ -42,6 +41,8 @@ public class ExampleTest {
 
 
     }
+
+
     @BeforeEach
     public void restMyoutput() {
         Myoutput.reset();
@@ -164,13 +165,19 @@ public class ExampleTest {
     @Test
     public void TestLsCommand() {
         System.setOut(new PrintStream(Myoutput));
-
+CLI.MKDir("cli");
+CLI.cd("cli");
+String[] gg ={"touch","nonHiddenTestFile.txt"};
+        CLI.createFile(gg);
+        CLI.MKDir("testDir1");
+        gg = new String[]{"touch",".hiddenTestFile.txt"};
+        CLI.createFile(gg);
         // tett for ls
         String[] args = {"ls"};
+        Myoutput.reset();
         CLI.listFiles(args);
 
-        String expectedLsOutput = "Files and Directories in cli: "
-                + "nonHiddenTestFile.txt\n"
+        String expectedLsOutput = "nonHiddenTestFile.txt\n"
                 + "testDir1/\n";
 
         assertEquals(expectedLsOutput.trim(), Myoutput.toString().trim(), "Output did not match expected value.");
@@ -179,10 +186,10 @@ public class ExampleTest {
         Myoutput.reset();
 
         String[] args_a = {"ls", "-a"};
+        Myoutput.reset();
         CLI.listFiles(args_a);
 
-        String expectedLs_a = "Files and Directories in cli: "
-                + ".hiddenTestFile.txt\n"
+        String expectedLs_a = ".hiddenTestFile.txt\n"
                 + "nonHiddenTestFile.txt\n"
                 + "testDir1/\n";
 
@@ -192,10 +199,10 @@ public class ExampleTest {
         Myoutput.reset();
 
         String[] args_r = {"ls", "-r"};
+        Myoutput.reset();
         CLI.listFiles(args_r);
 
-        String expectedLs_r = "Files and Directories in cli: "
-                + "testDir1/\n"
+        String expectedLs_r = "testDir1/\n"
                 + "nonHiddenTestFile.txt\n" ;
 
         assertEquals(expectedLs_r.trim(), Myoutput.toString().trim(), "Output did not match expected value with -r.");
@@ -288,7 +295,7 @@ public class ExampleTest {
 
     @Test //this is testcase For cd()
     // cd not added into commands yet
-    public void testCD(){
+    void testCD(){
         CLI myClass = new CLI();
         String DirName = "menna";
         File F = new File("menna");
@@ -304,6 +311,49 @@ public class ExampleTest {
         String[] li = {"pwd"};
         CLI.PWD(li);
         assertEquals("Current directory is:"+System.getProperty("user.dir")+"\n",Myoutput.toString());
+    }
+
+    @Test
+    void testpipeStream() throws IOException {
+        System.setOut(new PrintStream(Myoutput));
+        String[] li ={"ls","|","grep","p"};
+        CLI.cd("..");
+
+         CLI.listFiles(li);// call the first function to get input of the pipe
+        String full_command = Myoutput.toString();// output of the full command
+        Myoutput.reset();
+        String [] li2 ={"ls"};
+        CLI.listFiles(li2);
+        String input =  Myoutput.toString(); // save the output of first command to pass it as input to the second command
+        Myoutput.reset();
+
+        CLI.grep(li[3],input,li,3);//  pass the output of first command to second command
+        String output1 = Myoutput.toString();   // save the output the got by the pipe
+
+        assertEquals(output1,full_command);
+
+
+    }
+
+    @Test
+    void testpipeRedirectio() throws IOException {
+        System.setOut(new PrintStream(Myoutput));
+        String[]li = new String[]{"ls","|","grep","fi",">","pipeAndRedirection"};
+        CLI.cd("..");
+        // call the first function to get input of the pipe
+        CLI.listFiles(li);
+        Myoutput.reset();
+        String full_command = Files.readString(new File(li[5]).toPath());// output of the full command
+        String[] li2 =new String[]{"ls"};
+        CLI.listFiles(li2);
+        String input =  Myoutput.toString(); // save the output of first command to pass it as input to the second command
+        Myoutput.reset();
+
+        CLI.grep(li[3],input,li,3);//  pass the output of first command to second command
+        String output1 = Files.readString(Paths.get(li[5]));   // save the output the got by the pipe
+        Files.delete((Paths.get(li[5])));
+        assertEquals(output1,full_command);
+
     }
 
 }

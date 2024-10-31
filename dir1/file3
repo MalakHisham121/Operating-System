@@ -1,0 +1,14 @@
+Files and Directories in Operating-System: cli/dir1/fileMain.javamenna/Files and Directories in Operating-System: cli/
+dir1/
+file
+
+
+    public void testRedirect() throws IOException{
+        String text = "I am just testing\nI am Sure you are doing great! ";
+        String file = "malak.txt";
+        CLI.redirect(Paths.get(file),text);
+        String currentContent = Files.readString(Paths.get(file));
+        assertEquals(text,currentContent);
+        Files.delete((Paths.get(file)));
+
+    }
