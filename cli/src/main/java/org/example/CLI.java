@@ -69,6 +69,7 @@ public class CLI {
 
     }
 
+    // ==============================================================================================
     //    Shahd Elnassag ^_^
     // Function Implementation of touch command
     public static void createFile(String[] args) {
@@ -91,45 +92,7 @@ public class CLI {
     }
 
     // Function Implementation of ls , ls -a , la -r commands
-    
-    public static void grep(String pattern, String text,String[]args,int pointer) {
-        // Compile the regex pattern
-        Pattern compiledPattern = Pattern.compile(pattern);
 
-        // Split the input text into lines
-        String[] lines = text.split("\n");
-String out = "";
-        // Loop through each line and search for the pattern
-        for (String line : lines) {
-            Matcher matcher = compiledPattern.matcher(line);
-            if (matcher.find()) {
-                out+=line+"\n";
-            }
-        }
-        boolean red =false;
-        boolean app = false;
-        for(int i = pointer;i<args.length;i++){
-            try {
-                if (args[i].equals(">")) {
-                    red =true;
-                  redirect(Paths.get(args[i+1]),out);
-                  break;
-                }
-                if (args[i].equals(">>")) {
-                    app = true;
-appendOutput(Paths.get(args[i+1]),out);
-break;
-                }
-            }
-            catch (Exception e){
-                System.out.println("You don't specify the file to redirect in");
-            }
-        }
-        if(!red&&!app){
-            System.out.println(out);
-        }
-
-    }
     public static void listFiles(String[] args) {
 
         try {
@@ -223,7 +186,7 @@ break;
         File Dir = new File(directoryPath);
         Dir.mkdir() ;
     }
-    //============================================================
+
     public static void RMDir(String DirName)  {
         String currentDir = System.getProperty("user.dir");
         String directoryPath = currentDir + "\\"+ DirName;
@@ -235,53 +198,8 @@ break;
             System.out.println("Error"+e.getMessage());
         }
     }
-    public static void head(String input, int numberOfLinesToShow,String[]args,int pointer) {
-        String[] lines = input.split("\n");
-      String out ="";
-        for (int i = 0; i < Math.min(numberOfLinesToShow, lines.length); i++) {
-            out+=lines[i]+"\n";
-        }
-        boolean red =false;
-        boolean app = false;
-        for(int i = pointer;i<args.length;i++){
-            try {
-                if (args[i].equals(">")) {
-                    red =true;
-                    redirect(Paths.get(args[i+1]),out);
-                    break;
-                }
-                if (args[i].equals(">>")) {
-                    app = true;
-                    appendOutput(Paths.get(args[i+1]),out);
-                    break;
-                }
-            }
-            catch (Exception e){
-                System.out.println("You don't specify the file to redirect in");
-            }
-        }
-        if(!red&&!app){
-            System.out.println(out);
-        }
-    }
 
-  public static void pipe(String[] args,int pointer,String input){
-        for(int i = pointer;i<args.length;i++){
 
-            if(args[i].equals("grep")){
-                grep(args[i+1],input,args,i+1);
-            }
-            else if (args[i].equals("head")) {
-                // Call the head method with the input from the previous command
-                head(input,Integer.parseInt(args[i + 1]),args,i+1);
-                return; // Exit after executing the command
-            }
-        }
-    }
-
-    
-
-    //============================================================
     public static void cd(String goingdirectory){
         String currentDirectory2 = System.getProperty("user.dir");
         File Go ;
@@ -301,39 +219,38 @@ break;
             System.out.println("there is no such directory");
         }
     }
-     //============================================================
-     //=======================================================================================
-//    public static void sort(Path currentDirectory, String fileName) {
-//        Path filePath = currentDirectory.resolve(fileName);
-//        try {
-//            Files.lines(filePath)
-//                    .sorted()
-//                    .forEach(System.out::println);
-//        } catch (IOException e) {
-//            System.out.println("sort: cannot read file '" + fileName + "': " + e.getMessage());
-//        }
-//    }
-//===========================================================================================
-//    public static void grep(Path currentDirectory, String pattern, String fileName) {
-//        Path filePath = currentDirectory.resolve(fileName);
-//        try {
-//            Files.lines(filePath)
-//                    .filter(line -> line.contains(pattern))
-//                    .forEach(System.out::println);
-//        } catch (IOException e) {
-//            System.out.println("grep: cannot read file '" + fileName + "': " + e.getMessage());
-//        }
-//    }
-//==============================================================================================
-//    public static void unique(Path currentDirectory, String fileName) {
-//        Path filePath = currentDirectory.resolve(fileName);
-//        try {
-//            Set<String> uniqueLines = new LinkedHashSet<>(Files.readAllLines(filePath));
-//            uniqueLines.forEach(System.out::println);
-//        } catch (IOException e) {
-//            System.out.println("unique: cannot read file '" + fileName + "': " + e.getMessage());
-//        }
-//    }
+
+    public static void PWD(String []args)  {
+        String currentDir = "Current directory is:"+ System.getProperty("user.dir") +"\n";
+        try{
+            boolean rd = false,ap= false;
+            for(int i =0;i<args.length;i++){
+                if(args[i].equals(">")){
+                    if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to redirect in");
+                    else {
+                        rd = true;
+                        redirect(Paths.get(args[i + 1]), currentDir);
+                    }
+                }
+                if(args[i].equals(">>")){
+                    if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to append to");
+                    else {
+                        ap = true;
+                        appendOutput(Paths.get(args[i + 1]), currentDir);
+                    }
+                }
+            }
+            // System.out.println(rd);
+            if(!ap&&!rd){
+
+                System.out.print(currentDir);
+            }
+        }
+        catch(Exception e){
+            System.out.println( e.getMessage());
+        }
+    }
+
 //==============================================================================================
      public static void rm(Path currentDirectory, String[] files, boolean recursive) {
          for (String fileName : files) {
@@ -366,7 +283,6 @@ break;
          }
      }
 
-    //=================================================================================
 // Add this method to implement the 'mv' command functionality
     public static void mv(Path currentDirectory, String source, String destination) {
         Path sourcePath = currentDirectory.resolve(source);
@@ -380,18 +296,17 @@ break;
 
             if (Files.isDirectory(destinationPath)) {
                 Path newPath = destinationPath.resolve(sourcePath.getFileName());
-                Files.move(sourcePath, newPath);
-                System.out.println("Moved: " + source + " to " + newPath);
-            } else {
+                Files.move(sourcePath, newPath,StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("Moved: " + source + " to " + destinationPath.getFileName() + "/");
+            } else if(!Files.isDirectory(destinationPath)) {
                 Files.move(sourcePath, destinationPath);
-                System.out.println("Moved: " + source + " to " + destination);
+                System.out.println("Renamed: " + source + " to " + destination);
             }
         } catch (IOException e) {
             System.out.println("mv: cannot move '" + source + "': " + e.getMessage());
         }
     }
 
-    //=================================================================================================
     public static void cat(String[] args) {
         if (args.length < 2) {
             System.out.println("cat: missing file operand, Enter file names after command cat");
@@ -448,39 +363,90 @@ break;
 
     }
 
-    //===============================================================================================
-    public static void PWD(String []args)  {
-        String currentDir = "Current directory is:"+ System.getProperty("user.dir") +"\n";
-        try{
-            boolean rd = false,ap= false;
-            for(int i =0;i<args.length;i++){
-                if(args[i].equals(">")){
-                    if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to redirect in");
-                    else {
-                        rd = true;
-                        redirect(Paths.get(args[i + 1]), currentDir);
-                    }
-                }
-                if(args[i].equals(">>")){
-                    if(i==args.length-1) throw new RuntimeException("You don't mentioned the file to append to");
-                    else {
-                        ap = true;
-                        appendOutput(Paths.get(args[i + 1]), currentDir);
-                    }
-                }
-            }
-            // System.out.println(rd);
-            if(!ap&&!rd){
+    public static void grep(String pattern, String text,String[]args,int pointer) {
+        // Compile the regex pattern
+        Pattern compiledPattern = Pattern.compile(pattern);
 
-                System.out.print(currentDir);
+        // Split the input text into lines
+        String[] lines = text.split("\n");
+        String out = "";
+        // Loop through each line and search for the pattern
+        for (String line : lines) {
+            Matcher matcher = compiledPattern.matcher(line);
+            if (matcher.find()) {
+                out+=line+"\n";
             }
         }
-        catch(Exception e){
-            System.out.println( e.getMessage());
+        boolean red =false;
+        boolean app = false;
+        for(int i = pointer;i<args.length;i++){
+            try {
+                if (args[i].equals(">")) {
+                    red =true;
+                    redirect(Paths.get(args[i+1]),out);
+                    break;
+                }
+                if (args[i].equals(">>")) {
+                    app = true;
+                    appendOutput(Paths.get(args[i+1]),out);
+                    break;
+                }
+            }
+            catch (Exception e){
+                System.out.println("You don't specify the file to redirect in");
+            }
         }
+        if(!red&&!app){
+            System.out.println(out);
+        }
+
     }
 
 
+    public static void head(String input, int numberOfLinesToShow,String[]args,int pointer) {
+        String[] lines = input.split("\n");
+        String out ="";
+        for (int i = 0; i < Math.min(numberOfLinesToShow, lines.length); i++) {
+            out+=lines[i]+"\n";
+        }
+        boolean red =false;
+        boolean app = false;
+        for(int i = pointer;i<args.length;i++){
+            try {
+                if (args[i].equals(">")) {
+                    red =true;
+                    redirect(Paths.get(args[i+1]),out);
+                    break;
+                }
+                if (args[i].equals(">>")) {
+                    app = true;
+                    appendOutput(Paths.get(args[i+1]),out);
+                    break;
+                }
+            }
+            catch (Exception e){
+                System.out.println("You don't specify the file to redirect in");
+            }
+        }
+        if(!red&&!app){
+            System.out.println(out);
+        }
+    }
+
+    public static void pipe(String[] args,int pointer,String input){
+        for(int i = pointer;i<args.length;i++){
+
+            if(args[i].equals("grep")){
+                grep(args[i+1],input,args,i+1);
+            }
+            else if (args[i].equals("head")) {
+                // Call the head method with the input from the previous command
+                head(input,Integer.parseInt(args[i + 1]),args,i+1);
+                return; // Exit after executing the command
+            }
+        }
+    }
+    //------------------------------------------------------------------------------
     public static void runMyCli() {
         Scanner input = new Scanner(System.in);
         while (true) {
@@ -543,7 +509,11 @@ break;
 
             }
             else if(commandArgs[0].equals("cd")){
-                cd(commandArgs[1]);
+                if (commandArgs.length < 2) {
+                    System.out.println("cd: missing operand, Enter the directory name after command cd");
+                } else {
+                    cd(commandArgs[1]);
+                }
             }
 
             // Final Case be careful Do not Delete Me

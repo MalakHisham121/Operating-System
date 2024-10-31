@@ -18,17 +18,27 @@ public class ExampleTest {
     private final ByteArrayOutputStream Myoutput = new ByteArrayOutputStream();
     private final PrintStream myout = System.out;
     private Path testDir;
+    private Path sourceFile , existFile , MVDir;
+
 
     @BeforeEach
     public void setUpStreams() throws IOException {
         testDir = Files.createTempDirectory("testDir");
-      //  System.setOut(new PrintStream(Myoutput));
+        System.setOut(new PrintStream(Myoutput));
 
         // Samples File used in Testing LS
         Files.createFile(testDir.resolve("nonHiddenTestFile.txt"));
         Files.createFile(testDir.resolve(".hiddenTestFile.txt"));
         Files.createDirectory(testDir.resolve("testDir1"));
         CLI.currentDirectory = testDir;
+        // for rm
+        sourceFile = testDir.resolve("sourceFile");
+        Files.writeString(sourceFile, "Shahd Elnassag this is Source File");
+
+        existFile = testDir.resolve("existFile");
+        Files.writeString(existFile, "Shahd Elnassag this existing File");
+        MVDir = testDir.resolve("MVDirTest");
+        Files.createDirectory(MVDir);
 
 
     }
@@ -47,14 +57,32 @@ public class ExampleTest {
         System.setOut(myout);
     }
 
-    @AfterEach
-    public void tearDown() throws Exception {
-        // Clean up the temporary directory
-        for (Path path : Files.newDirectoryStream(testDir)) {
-            Files.delete(path);
+// used if directory not empty
+    private void deleteDirectory(Path dir) throws IOException {
+        try (var paths = Files.newDirectoryStream(dir)) {
+            for (Path path : paths) {
+                if (Files.isDirectory(path)) {
+                    deleteDirectory(path);
+                }
+                Files.deleteIfExists(path);
+            }
         }
-        Files.delete(testDir); // Delete the test directory
+        Files.deleteIfExists(dir);
     }
+@AfterEach
+    public void tearDown() throws Exception {
+        try (var paths = Files.newDirectoryStream(testDir)) {
+            for (Path path : paths) {
+                if (Files.isDirectory(path)) {
+                    deleteDirectory(path);
+                } else {
+                    Files.deleteIfExists(path);
+                }
+            }
+        }
+        Files.deleteIfExists(testDir);
+    }
+
 
 
     @Test
@@ -173,10 +201,41 @@ public class ExampleTest {
         assertEquals(expectedLs_r.trim(), Myoutput.toString().trim(), "Output did not match expected value with -r.");
 
     }
-// Test cat Command
 
-    public void testCatCommand() {
-        System.setOut(new PrintStream(Myoutput));
+    // Test mv Command
+    @Test
+    public void testMVCommand() throws IOException{
+
+        // test Rename Case1
+        CLI.mv(testDir,"sourceFile","testRenameFile");
+        Path renameFile = testDir.resolve("testRenameFile");
+        assertTrue(Files.exists(renameFile), "File Renamed");
+        assertFalse(Files.exists(sourceFile),"old name File doesn't exist");
+        assertEquals("Renamed: sourceFile to testRenameFile",Myoutput.toString().trim());
+
+        // Move renamed File case2
+        Myoutput.reset();
+        CLI.mv(testDir,"testRenameFile","MVDirTest");
+        assertTrue(Files.exists(MVDir.resolve("testRenameFile")), " moved Renamed File");
+        assertFalse(Files.exists(renameFile),"Directory Change of this file");
+        assertEquals("Moved: testRenameFile to MVDirTest/",Myoutput.toString().trim());
+
+
+        // Test Move Case3
+        Myoutput.reset();
+        CLI.mv(testDir,"existFile","MVDirTest");
+        assertTrue(Files.exists(MVDir.resolve("existFile")), "File moved");
+        assertFalse(Files.exists(existFile),"Directory Change of this file");
+        assertEquals("Moved: existFile to MVDirTest/",Myoutput.toString().trim());
+
+        // Renamed Moved File  Case4
+        Myoutput.reset();
+        Myoutput.reset();
+        CLI.mv(MVDir, "existFile", "renameMovedFile");
+        assertTrue(Files.exists(MVDir.resolve("renameMovedFile")), "Moved renamed File");
+        assertFalse(Files.exists(MVDir.resolve("existFile")), "Old name File doesn't exist after renaming");
+        assertEquals("Renamed: existFile to renameMovedFile", Myoutput.toString().trim());
+
     }
 
 
@@ -210,7 +269,7 @@ public class ExampleTest {
 
 
     @Test //this is testcase For MKdir()
-    public void Test1(){
+    public void testMKdir(){
         CLI myClass = new CLI();
         myClass.MKDir("menna");
         File F = new File("menna");
@@ -218,7 +277,7 @@ public class ExampleTest {
     }
 
     @Test //this is testcase For RMdir()
-    public void Test2(){
+    public void testRMdir(){
         CLI myClass = new CLI();
         File F = new File("menna");
         assertTrue(F.exists());
@@ -229,7 +288,7 @@ public class ExampleTest {
 
     @Test //this is testcase For cd()
     // cd not added into commands yet
-    public void Test3(){
+    public void testCD(){
         CLI myClass = new CLI();
         String DirName = "menna";
         File F = new File("menna");
